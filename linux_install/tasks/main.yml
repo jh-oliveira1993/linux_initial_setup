@@ -1,0 +1,111 @@
+---
+# tasks file for linux_install
+- name: Getting system arch
+  shell: dpkg --print-architecture
+  register: sys_arch
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Uninstall all docker conflicting packages
+  apt:
+    name:
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - docker-compose-v2
+      - podman-docker
+      - containerd runc
+    state: absent
+
+- name: Create directory for apt keyrings
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Docker GPG key
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Download Zabbix GPG key
+  apt_key:
+    url: https://repo.zabbix.com/zabbix-official-repo.key
+    state: present
+
+- name: Add Docker and Zabbix repository
+  apt_repository:
+    repo: "{{ item.url }}"
+    state: present
+    filename: "{{ item.filename }}"
+  with_items:
+    - url: "deb [arch={{ sys_arch.stdout }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+      filename: docker
+    - url: "deb https://repo.zabbix.com/zabbix/{{ zbx_maj_ver }}.{{ zbx_min_ver }}/ubuntu {{ ansible_distribution_release }} main"
+      filename: zabbix
+
+- name: Run the equivalent of "apt-get update" as a separate step again
+  apt:
+    update_cache: yes
+
+- name: Install basic packages
+  apt:
+    name:
+      - tree
+      - vim
+      - ca-certificates
+      - curl
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - neofetch
+      - zabbix-agent2
+    state: present
+
+- name: Templating sudoers.d file
+  copy:
+    src: jose
+    dest: /etc/sudoers.d/jose
+    mode: '0644'
+
+- name: Templating motd.d
+  copy:
+    src: 01-welcome
+    dest: /etc/update-motd.d/01-welcome
+    mode: '0755'
+
+- name: Ensure group "docker" exists
+  group:
+    name: docker
+    state: present
+
+- name: Add the user 'jose', appending the group 'docker' to the user's groups
+  user:
+    name: jose
+    groups: docker
+    append: yes
+
+- name: Configuring zabbix_agent2.conf
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: "{{ item.regex }}"
+    line: "{{ item.line }}"
+  with_items:
+    - regex: '^Hostname='
+      line: Hostname={{ ansible_hostname }}
+    - regex: '^Server='
+      line: Server=192.168.15.16,192.168.15.19
+    - regex: '^ServerActive='
+      line: ServerActive=192.168.15.16,192.168.15.19
+    - regex: '^\# HostMetadata='
+      line: HostMetadata=linux
+
+- name: Restart Zabbix agent
+  service:
+    name: zabbix-agent2
+    state: restarted

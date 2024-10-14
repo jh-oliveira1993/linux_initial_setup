@@ -1,0 +1,13 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  vars_files:
+    - ./pwd_jose.yml
+  tasks:
+    
+    - name: Populate service facts
+      service_facts:
+    
+    - import_role:
+        name: linux_install
+        tasks_from: main

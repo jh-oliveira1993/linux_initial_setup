@@ -1,0 +1,4 @@
+---
+# defaults file for linux_install
+zbx_maj_ver: 7
+zbx_min_ver: 0
