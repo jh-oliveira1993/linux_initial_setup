@@ -65,6 +65,7 @@
       - docker-compose-plugin
       - neofetch
       - zabbix-agent2
+      - qemu-guest-agent
     state: present
 
 - name: Templating sudoers.d file
@@ -109,3 +110,9 @@
   service:
     name: zabbix-agent2
     state: restarted
+
+- name: Start and enable qemu-guest-agent
+  service:
+    name: qemu-guest-agent
+    state: restarted
+    enabled: true
