@@ -9,5 +9,5 @@
       service_facts:
     
     - import_role:
-        name: linux_install
+        name: linux_setup
         tasks_from: main
