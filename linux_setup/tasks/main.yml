@@ -100,9 +100,9 @@
     - regex: '^Hostname='
       line: Hostname={{ ansible_hostname }}
     - regex: '^Server='
-      line: Server=192.168.15.16,192.168.15.19
+      line: Server={{ zbx_srv_ips }}
     - regex: '^ServerActive='
-      line: ServerActive=192.168.15.16,192.168.15.19
+      line: ServerActive={{ zbx_srv_act_ips }}
     - regex: '^\# HostMetadata='
       line: HostMetadata=linux
 
