@@ -1,0 +1,58 @@
+---
+- name: Uninstall all docker conflicting packages
+  dnf:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+      - podman
+      - runc
+    state: absent
+
+- name: Add Docker repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Add Zabbix repository
+  yum_repository:
+    name: zabbix
+    description: Zabbix Official Repository
+    baseurl: "https://repo.zabbix.com/zabbix/{{ zbx_maj_ver }}.{{ zbx_min_ver }}/rhel/{{ ansible_distribution_major_version }}/$basearch/"
+    gpgcheck: yes
+    gpgkey: https://repo.zabbix.com/zabbix-official-repo.key
+    enabled: yes
+
+- name: Install EPEL release for Oracle Linux
+  dnf:
+    name: "oracle-epel-release-el{{ ansible_distribution_major_version }}"
+    state: present
+  when: ansible_distribution == "OracleLinux"
+
+- name: Install EPEL release for other RHEL based
+  dnf:
+    name: epel-release
+    state: present
+  when: ansible_distribution != "OracleLinux"
+
+- name: Install basic packages
+  dnf:
+    name:
+      - tree
+      - vim
+      - ca-certificates
+      - curl
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - neofetch
+      - zabbix-agent2
+      - qemu-guest-agent
+    state: present
