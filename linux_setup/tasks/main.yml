@@ -7,7 +7,7 @@
   copy:
     src: jose
     dest: /etc/sudoers.d/jose
-    mode: '0644'
+    mode: '0440'
 
 - name: Templating motd.d
   copy:
