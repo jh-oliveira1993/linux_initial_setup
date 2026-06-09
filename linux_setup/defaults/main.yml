@@ -2,5 +2,5 @@
 # defaults file for linux_install
 zbx_maj_ver: 7
 zbx_min_ver: 0
-zbx_srv_ips: 192.168.15.0/24
-zbx_srv_act_ips: 192.168.15.13;192.168.15.14;192.168.15.93;192.168.15.90
+zbx_srv_ip: '192.168.15.0/24'
+zbx_srv_act_ip: '192.168.15.13;192.168.15.14;192.168.15.93;192.168.15.90'
