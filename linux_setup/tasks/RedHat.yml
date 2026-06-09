@@ -24,7 +24,7 @@
     name: zabbix
     description: Zabbix Official Repository
     baseurl: "https://repo.zabbix.com/zabbix/{{ zbx_maj_ver }}.{{ zbx_min_ver }}/rhel/{{ ansible_distribution_major_version }}/$basearch/"
-    gpgcheck: yes
+    gpgcheck: no
     gpgkey: https://repo.zabbix.com/zabbix-official-repo.key
     enabled: yes
 

@@ -14,6 +14,7 @@
     src: 01-welcome
     dest: /etc/update-motd.d/01-welcome
     mode: '0755'
+  when: ansible_os_family == "Debian"
 
 - name: Ensure group "docker" exists
   group:
